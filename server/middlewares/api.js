@@ -4,6 +4,15 @@ const bareRequest = require('request');
 const config = require('../../config/config.js');
 const AUTH0_DOMAIN = config.AUTH0_DOMAIN;
 
+// NOTE: for demo purposes only: there are better ways to do this
+const getToken = function getToken(request) {
+  const header = request.headers.authorization;
+  if (header && header.startsWith("Bearer ")) {
+    return header.substring(7)
+  }
+  throw new Error("invalid Authorization header")
+}
+
 const request = function request(options) {
   return new Promise(function(resolve, reject) {
     bareRequest(options, (error, response) => {
@@ -27,14 +36,14 @@ const getUsername = function getUsername(token) {
       return username;
     } else {
       throw Error('no user found with that token.');
-    } 
+    }
   });
 };
 
 module.exports = {
   submitPressure(request, response) {
+    const token = getToken(request)
     const body = request.body;
-    const token = body.token;
     const diastolic = body.diastolic;
     const systolic = body.systolic;
     const date = body.date ? body.date : Date.now();
@@ -54,7 +63,7 @@ module.exports = {
     });
   },
   getPressures(request, response) {
-    const token = request.query.token;
+    const token = getToken(request)
     getUsername(token)
     .then(username => {
       return userController.getPressures(username)
