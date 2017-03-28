@@ -17,9 +17,14 @@
     "request": "^2.79.0",
     "sequelize": "^3.30.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "concurrently": "^3.4.0"
+  },
   "scripts": {
-    "test": "mocha server/test/test.js"
+    "test": "mocha server/test/test.js",
+    "server": "babel-node ./server/app.js",
+    "client": "babel-node start-client.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",
